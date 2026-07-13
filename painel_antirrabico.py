@@ -1,6 +1,27 @@
+import os
+import urllib.parse
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from dotenv import load_dotenv
+
+# Carrega variáveis de ambiente a partir de um arquivo .env local
+load_dotenv()
+
+# Credenciais do painel via Streamlit secrets ou variáveis de ambiente
+VALID_USER = st.secrets.get("PANEL_USER") if hasattr(st, "secrets") else None
+VALID_PASS = st.secrets.get("PANEL_PASS") if hasattr(st, "secrets") else None
+VALID_USER = VALID_USER or os.getenv("PANEL_USER")
+VALID_PASS = VALID_PASS or os.getenv("PANEL_PASS")
+
+# Fallback para ambiente onde o .env não está disponível (por exemplo, deploy remoto)
+if not VALID_USER or not VALID_PASS:
+    VALID_USER = "vigilanciaepidemiologicadsvii@gmail.com"
+    VALID_PASS = "antirrabica"
+    USE_FALLBACK_CREDENTIALS = True
+else:
+    USE_FALLBACK_CREDENTIALS = False
 
 # Configuração da página para modo amplo
 st.set_page_config(page_title="Painel Antirrábico - Busca Ativa", layout="wide")
@@ -21,8 +42,11 @@ def sistema_login():
             usuario = st.text_input("Usuário (E-mail)")
             senha = st.text_input("Senha", type="password")
             
+            if not VALID_USER or not VALID_PASS:
+                st.warning("As credenciais não estão definidas. Crie um arquivo .env com PANEL_USER e PANEL_PASS.")
+
             if st.button("Entrar no Painel"):
-                if usuario == "vigilancia.ds7@recife.pe.gov.br" and senha == "Antirrabica2026":
+                if usuario == VALID_USER and senha == VALID_PASS:
                     st.session_state["autenticado"] = True
                     st.rerun()
                 else:
@@ -116,6 +140,24 @@ if sistema_login():
         df_busca_ativa = df_busca_ativa[condicao_nome | condicao_sinan]
 
     st.dataframe(df_busca_ativa, use_container_width=True, hide_index=True)
+
+    if not df_busca_ativa.empty:
+        paciente_selecionado = st.selectbox(
+            "🔎 Selecione o paciente para ver o endereço no mapa:",
+            df_busca_ativa['Nome do Paciente'].unique()
+        )
+        endereco = df_busca_ativa.loc[df_busca_ativa['Nome do Paciente'] == paciente_selecionado].iloc[0]
+        endereco_completo = f"{endereco['Endereço / Rua']}, {endereco['Número']}, {endereco['Bairro']}, Recife, PE, Brasil"
+        endereco_query = urllib.parse.quote_plus(endereco_completo)
+        mapa_embed = f"https://maps.google.com/maps?q={endereco_query}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+
+        st.markdown(f"**Endereço selecionado:** {endereco_completo}")
+        st.markdown(f"[Abrir no Google Maps](https://www.google.com/maps/search/?api=1&query={endereco_query})")
+        st.components.v1.html(
+            f'<iframe src="{mapa_embed}" width="100%" height="450" style="border:0;"></iframe>',
+            height=470,
+            scrolling=False,
+        )
 
     st.write("---")
 

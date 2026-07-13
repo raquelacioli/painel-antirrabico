@@ -17,6 +17,9 @@ ENV/
 env/
 .venv/
 
+# Environment variables
+.env
+
 # Streamlit
 .streamlit/
 
