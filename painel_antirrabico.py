@@ -1,3 +1,4 @@
+import io
 import os
 import urllib.parse
 
@@ -61,8 +62,8 @@ if sistema_login():
     # 2. CARREGAMENTO E TRATAMENTO DOS DADOS DO SINAN
     # =========================================================================
     @st.cache_data
-    def carregar_dados_sinan():
-        df = pd.read_excel('Banco_Dados_Antirrabica.xlsx')
+    def carregar_dados_sinan(file_bytes):
+        df = pd.read_excel(io.BytesIO(file_bytes))
         
         # Limpando as siglas oficiais do SUS
         df.columns = [col.split(',')[0] for col in df.columns]
@@ -83,7 +84,20 @@ if sistema_login():
         
         return df
 
-    df_completo = carregar_dados_sinan()
+    st.sidebar.markdown("<h2 style='color: #2E5B88;'>Dados</h2>", unsafe_allow_html=True)
+    arquivo_enviado = st.sidebar.file_uploader("Upload do Banco de Dados (Excel)", type=['xlsx'])
+    if arquivo_enviado is None:
+        st.sidebar.warning("Faça upload do arquivo Excel para carregar os dados.")
+        st.stop()
+
+    file_bytes = arquivo_enviado.read()
+    st.sidebar.success("Arquivo carregado com sucesso. O painel será atualizado.")
+
+    try:
+        df_completo = carregar_dados_sinan(file_bytes)
+    except Exception as e:
+        st.error(f"Erro ao carregar o arquivo: {e}")
+        st.stop()
 
     # =========================================================================
     # 3. BARRA LATERAL - FILTROS POR UNIDADE E ANO
