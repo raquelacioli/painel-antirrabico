@@ -1,11 +1,291 @@
+import base64
 import io
 import os
 import urllib.parse
+from pathlib import Path
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from dotenv import load_dotenv
+
+
+def get_login_background_base64():
+    root = Path(__file__).parent
+    image_names = [
+        "Painel VigiRaiva DSVII – Fundo.png",
+        "vagiraiva_dsvii_bg.png",
+        "vagiraiva_dsvii_bg.jpg",
+        "vagiraiva_dsvii_bg.jpeg",
+        "vagiraiva_dsvii_fundo.png",
+        "vagiraiva_dsvii_fundo.jpg",
+        "vagiraiva_dsvii_fundo.jpeg",
+        "vigi_raiva_dsvii.png",
+        "vigi_raiva_dsvii.jpg",
+        "vigi_raiva_dsvii.jpeg"
+    ]
+    for name in image_names:
+        path = root / name
+        if path.exists():
+            suffix = path.suffix.lower()
+            mime_type = "image/png" if suffix == ".png" else "image/jpeg"
+            with open(path, "rb") as f:
+                encoded = base64.b64encode(f.read()).decode()
+                return f"data:{mime_type};base64,{encoded}"
+    return None
+
+
+def get_login_logo_base64():
+    root = Path(__file__).parent
+    logo_names = [
+        "logo.svg",
+        "logo.png",
+        "logo.jpg",
+        "logo.jpeg",
+        "vagiraiva_logo.svg",
+        "vagiraiva_logo.png",
+        "vagiraiva_logo.jpg",
+        "vagiraiva_logo.jpeg",
+        "logo_vagi_raiva.svg",
+        "logo_vagi_raiva.png",
+        "logo_vagi_raiva.jpg",
+        "logo_vagi_raiva.jpeg"
+    ]
+    for name in logo_names:
+        path = root / name
+        if path.exists():
+            suffix = path.suffix.lower()
+            if suffix == ".svg":
+                mime_type = "image/svg+xml"
+            elif suffix == ".png":
+                mime_type = "image/png"
+            else:
+                mime_type = "image/jpeg"
+            with open(path, "rb") as f:
+                encoded = base64.b64encode(f.read()).decode()
+                return f"data:{mime_type};base64,{encoded}"
+    return None
+
+
+def get_login_brand_html():
+    logo = get_login_logo_base64()
+    if logo:
+        return f"<img class='brand-logo-img' src='{logo}' alt='Logo do Painel' />"
+    return "<div class='brand-logo'>DSVII</div>"
+
+
+def set_login_background():
+    img_b64 = get_login_background_base64()
+    if img_b64:
+        st.markdown(
+            """
+            <style>
+            .stApp {
+                background-image: url('""" + img_b64 + """');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+            .stApp::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background: rgba(10, 25, 47, 0.44);
+                z-index: 0;
+            }
+            .login-box {
+                position: relative;
+                z-index: 1;
+                background: rgba(255, 255, 255, 0.94);
+                padding: 32px 36px;
+                border-radius: 28px;
+                box-shadow: 0 28px 80px rgba(0, 0, 0, 0.16);
+                max-width: 620px;
+                width: min(95%, 620px);
+                margin: 72px auto 48px auto;
+                border: 1px solid rgba(255, 255, 255, 0.72);
+                backdrop-filter: blur(16px);
+            }
+            .login-box .brand-header {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 18px;
+                justify-content: center;
+            }
+            .login-box .stTextInput,
+            .login-box .stButton {
+                width: 100% !important;
+                max-width: 560px;
+                margin: 0 auto;
+            }
+            @media screen and (max-width: 768px) {
+                .login-box {
+                    padding: 24px 20px;
+                    margin: 42px auto 32px auto;
+                }
+                .login-box .brand-header {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .login-box .brand-logo, .login-box .brand-logo-img {
+                    width: 48px;
+                    height: 48px;
+                }
+                .login-box h2 {
+                    font-size: 1.75rem;
+                }
+                .login-box .stButton button {
+                    font-size: 0.95rem;
+                }
+            }
+            .login-box .brand-logo, .login-box .brand-logo-img {
+                width: 56px;
+                height: 56px;
+                border-radius: 18px;
+                display: grid;
+                place-items: center;
+                font-weight: 700;
+                font-size: 1.15rem;
+                letter-spacing: 0.08em;
+            }
+            .login-box .brand-logo {
+                background: #2E5B88;
+                color: white;
+            }
+            .login-box .brand-logo-img {
+                object-fit: contain;
+                background: white;
+                padding: 6px;
+                border: 1px solid rgba(46, 91, 136, 0.18);
+            }
+            .login-box .brand-text {
+                line-height: 1.2;
+            }
+            .login-box .brand-text strong {
+                display: block;
+                color: #1E3A5F;
+                font-size: 1rem;
+            }
+            .login-box .brand-text span {
+                color: #4a4a4a;
+                font-size: 0.94rem;
+            }
+            .login-box h2 {
+                margin-bottom: 8px;
+                font-size: 2.1rem;
+                letter-spacing: 0.04em;
+            }
+            .login-box .stButton button {
+                width: 100%;
+                padding: 0.95rem 1rem;
+                font-size: 1rem;
+            }
+            .login-box .stTextInput>div>div>input {
+                border-radius: 12px;
+            }
+            .login-box .stTextInput>div>label {
+                font-weight: 600;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <style>
+            .login-box {
+                position: relative;
+                z-index: 1;
+                background: rgba(255, 255, 255, 0.96);
+                padding: 32px 36px;
+                border-radius: 28px;
+                box-shadow: 0 28px 80px rgba(0, 0, 0, 0.16);
+                max-width: 620px;
+                width: min(95%, 620px);
+                margin: 72px auto 48px auto;
+                border: 1px solid rgba(230, 230, 230, 0.9);
+                backdrop-filter: blur(16px);
+            }
+            .login-box .brand-header {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 18px;
+                justify-content: center;
+            }
+            .login-box .stTextInput,
+            .login-box .stButton {
+                width: 100% !important;
+                max-width: 560px;
+                margin: 0 auto;
+            }
+            @media screen and (max-width: 768px) {
+                .login-box {
+                    padding: 24px 20px;
+                    margin: 42px auto 32px auto;
+                }
+                .login-box .brand-header {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .login-box .brand-logo {
+                    width: 48px;
+                    height: 48px;
+                }
+                .login-box h2 {
+                    font-size: 1.75rem;
+                }
+                .login-box .stButton button {
+                    font-size: 0.95rem;
+                }
+            }
+            .login-box .brand-logo {
+                width: 56px;
+                height: 56px;
+                border-radius: 18px;
+                background: #2E5B88;
+                color: white;
+                display: grid;
+                place-items: center;
+                font-weight: 700;
+                font-size: 1.15rem;
+                letter-spacing: 0.08em;
+            }
+            .login-box .brand-text {
+                line-height: 1.2;
+            }
+            .login-box .brand-text strong {
+                display: block;
+                color: #1E3A5F;
+                font-size: 1rem;
+            }
+            .login-box .brand-text span {
+                color: #4a4a4a;
+                font-size: 0.94rem;
+            }
+            .login-box h2 {
+                margin-bottom: 8px;
+                font-size: 2.1rem;
+                letter-spacing: 0.04em;
+            }
+            .login-box .stButton button {
+                width: 100%;
+                padding: 0.95rem 1rem;
+                font-size: 1rem;
+            }
+            .login-box .stTextInput>div>div>input {
+                border-radius: 12px;
+            }
+            .login-box .stTextInput>div>label {
+                font-weight: 600;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
 # Carrega variáveis de ambiente a partir de um arquivo .env local
 load_dotenv()
@@ -35,9 +315,19 @@ def sistema_login():
         st.session_state["autenticado"] = False
 
     if not st.session_state["autenticado"]:
-        st.markdown("<h2 style='text-align: center; color: #2E5B88;'>Vigilância Epidemiológica - Distrito VII</h2>", unsafe_allow_html=True)
+        set_login_background()
+        st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='brand-header'>"
+            f"{get_login_brand_html()}"
+            "<div class='brand-text'><strong>Vigilância Epidemiológica</strong><span>Distrito VII</span></div>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown("<h2 style='text-align: center; color: #2E5B88; margin-bottom: 6px;'>Painel Antirrábico - Busca Ativa</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #4a4a4a; margin-top: 0; margin-bottom: 22px; font-size: 1rem;'>Acesso restrito ao painel de vigilância antirrábica</p>", unsafe_allow_html=True)
         
-        col_login, _ = st.columns([1, 2])
+        col1, col_login, col2 = st.columns([1, 2, 1])
         with col_login:
             st.subheader("🔑 Acesso Restrito ao Painel")
             usuario = st.text_input("Usuário (E-mail)")
@@ -52,6 +342,7 @@ def sistema_login():
                     st.rerun()
                 else:
                     st.error("Usuário ou senha incorretos!")
+        st.markdown("</div>", unsafe_allow_html=True)
         return False
     return True
 

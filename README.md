@@ -5,7 +5,6 @@ Painel em Streamlit para monitoramento epidemiológico de notificações antirr�
 ## O que está neste repositório
 
 - `painel_antirrabico.py` - aplicativo Streamlit
-- `Banco_Dados_Antirrabica.xlsx` - base de dados usada pelo painel
 - `requirements.txt` - dependências Python
 - `.gitignore` - arquivos e pastas ignorados pelo Git
 
@@ -36,24 +35,37 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-4. Rode o app:
+4. Crie um arquivo `.env` na raiz do projeto com suas credenciais:
+
+```env
+PANEL_USER=vigilanciaepidemiologicadsvii@gmail.com
+PANEL_PASS=antirrabica
+```
+
+5. Rode o app:
 
 ```powershell
 .\.venv\Scripts\python.exe -m streamlit run painel_antirrabico.py
 ```
 
-5. Abra o navegador no link que o Streamlit mostrar, normalmente `http://localhost:8501`.
+6. Abra o navegador no link que o Streamlit mostrar, normalmente `http://localhost:8501`.
 
 ## Como usar o painel
 
+- Faça upload do arquivo Excel semanal na barra lateral.
 - Use a barra lateral para escolher a unidade de saúde e o ano.
 - Pesquise por nome do paciente ou número da notificação.
 - Veja os gráficos e métricas de casos na unidade selecionada.
 
+## Configuração de credenciais
+
+- O app utiliza variáveis de ambiente definidas em um arquivo `.env`.
+- Não inclua o `.env` no repositório; ele já está listado em `.gitignore`.
+
 ## Observações importantes
 
-- Mantenha o arquivo `Banco_Dados_Antirrabica.xlsx` na mesma pasta do `painel_antirrabico.py`.
-- O arquivo de dados não deve ser renomeado ou movido.
+- O app exige upload do arquivo `.xlsx` toda vez que for aberto.
+- Não é mais necessário manter `Banco_Dados_Antirrabica.xlsx` na pasta do projeto.
 - Se ocorrer erro ao importar `pandas`, execute:
 
 ```powershell
@@ -62,11 +74,11 @@ python -m venv .venv
 
 ## Publicar no GitHub
 
-1. Crie um repositório no GitHub com o nome `Antirrabica`.
-2. No terminal do projeto, rode:
+4. Crie um repositório no GitHub com o nome `painel-antirrabico`.
+5. No terminal do projeto, rode:
 
 ```powershell
-git remote add origin https://github.com/raquelacioli/Antirrabica.git
+git remote add origin https://github.com/raquelacioli/painel-antirrabico.git
 git branch -M main
 git push -u origin main
 ```
@@ -80,9 +92,9 @@ git push -u origin main
 ## Deploy no Streamlit Cloud
 
 1. Acesse https://streamlit.io/cloud e conecte sua conta GitHub.
-2. Escolha o repositório `raquelacioli/Antirrabica`.
+2. Escolha o repositório `raquelacioli/painel-antirrabico`.
 3. Configure a branch `main` e verifique se `requirements.txt` está no repositório.
-4. Se o app não encontrar o arquivo de dados, mantenha `Banco_Dados_Antirrabica.xlsx` no repositório ou use um caminho externo suportado.
+4. O app exige upload do arquivo Excel semanal; não é necessário manter `Banco_Dados_Antirrabica.xlsx` no repositório.
 
 ## Dicas úteis
 
