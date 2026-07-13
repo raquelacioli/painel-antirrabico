@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pym
+*.pdb
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+.Python
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Streamlit
+.streamlit/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Ignore wheel and build directories
+build/
+dist/
+*.egg-info/
