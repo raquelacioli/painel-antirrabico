@@ -288,22 +288,27 @@ def set_login_background():
 # Carrega variáveis de ambiente a partir de um arquivo .env local
 load_dotenv()
 
-# Credenciais do painel via Streamlit secrets ou variáveis de ambiente
-VALID_USER = st.secrets.get("PANEL_USER") if hasattr(st, "secrets") else None
-VALID_PASS = st.secrets.get("PANEL_PASS") if hasattr(st, "secrets") else None
-VALID_USER = VALID_USER or os.getenv("PANEL_USER")
-VALID_PASS = VALID_PASS or os.getenv("PANEL_PASS")
+# 1. Primeiro, tenta carregar do arquivo .env local (evita que o Streamlit quebre na sua máquina)
+VALID_USER = os.getenv("PANEL_USER")
+VALID_PASS = os.getenv("PANEL_PASS")
 
-# Fallback para ambiente onde o .env não está disponível (por exemplo, deploy remoto)
+# 2. Se não encontrar no .env (como no servidor de produção online), tenta buscar no st.secrets com tratamento de erro
+if not VALID_USER or not VALID_PASS:
+    try:
+        if hasattr(st, "secrets") and len(st.secrets) > 0:
+            VALID_USER = st.secrets.get("PANEL_USER")
+            VALID_PASS = st.secrets.get("PANEL_PASS")
+    except Exception:
+        # Se der erro de "secrets não encontrado", simplesmente ignora para rodar o fallback abaixo
+        pass
+
+# 3. Fallback definitivo se nada acima estiver configurado
 if not VALID_USER or not VALID_PASS:
     VALID_USER = "vigilanciaepidemiologicadsvii@gmail.com"
     VALID_PASS = "antirrabica"
     USE_FALLBACK_CREDENTIALS = True
 else:
     USE_FALLBACK_CREDENTIALS = False
-
-# Configuração da página para modo amplo
-st.set_page_config(page_title="Painel Antirrábico - Busca Ativa", layout="wide")
 
 # =========================================================================
 # 1. SISTEMA DE LOGIN E SEGURANÇA
