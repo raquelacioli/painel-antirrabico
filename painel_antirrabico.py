@@ -14,6 +14,7 @@ def get_login_background_base64():
     root = Path(__file__).parent
     image_names = [
         "Painel VigiRaiva DSVII – Fundo.png",
+        "Painel VigiRaiva DSVII - Fundo.png",
         "vagiraiva_dsvii_bg.png",
         "vagiraiva_dsvii_bg.jpg",
         "vagiraiva_dsvii_bg.jpeg",
@@ -38,18 +39,18 @@ def get_login_background_base64():
 def get_login_logo_base64():
     root = Path(__file__).parent
     logo_names = [
-        "logo.svg",
         "logo.png",
         "logo.jpg",
         "logo.jpeg",
-        "vagiraiva_logo.svg",
         "vagiraiva_logo.png",
         "vagiraiva_logo.jpg",
         "vagiraiva_logo.jpeg",
-        "logo_vagi_raiva.svg",
         "logo_vagi_raiva.png",
         "logo_vagi_raiva.jpg",
-        "logo_vagi_raiva.jpeg"
+        "logo_vagi_raiva.jpeg",
+        "logo.svg",
+        "vagiraiva_logo.svg",
+        "logo_vagi_raiva.svg"
     ]
     for name in logo_names:
         path = root / name
@@ -68,9 +69,6 @@ def get_login_logo_base64():
 
 
 def get_login_brand_html():
-    logo = get_login_logo_base64()
-    if logo:
-        return f"<img class='brand-logo-img' src='{logo}' alt='Logo do Painel' />"
     return "<div class='brand-logo'>DSVII</div>"
 
 
